@@ -1,7 +1,9 @@
 package software.ulpgc.kata3.app.windows;
 
+import software.ulpgc.kata3.arquitecture.control.SelectStatisticCommand;
 import software.ulpgc.kata3.arquitecture.io.CsvGameDeserializer;
 import software.ulpgc.kata3.arquitecture.io.FileGameLoader;
+import software.ulpgc.kata3.arquitecture.io.StatisticBarchartLoader;
 import software.ulpgc.kata3.arquitecture.model.Game;
 
 import java.io.File;
@@ -23,5 +25,23 @@ public class Main {
                         Integer::sum,
                         TreeMap::new
                 ));
+        TreeMap<String, Integer> gamesPerYear = games.stream()
+                .collect(Collectors.toMap(
+                        game -> String.valueOf(game.year()),
+                        game -> 1,
+                        Integer::sum,
+                        TreeMap::new
+                ));
+
+
+        MainFrame mainFrame = new MainFrame();
+        StatisticBarchartLoader loader = new StatisticBarchartLoader(platformsCount, gamesPerYear);
+        mainFrame.put("select", new SelectStatisticCommand(
+                mainFrame.getDialog(), mainFrame.getDisplay(), loader
+                ));
+        mainFrame.getDisplay().show(loader.load(0));
+        mainFrame.setVisible(true);
+
+
     }
 }
